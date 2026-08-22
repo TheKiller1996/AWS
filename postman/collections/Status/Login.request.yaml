@@ -1,0 +1,13 @@
+$kind: http-request
+name: Login
+description: ""
+url: http://localhost:8080/v1/api/auth/login
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "email":"sahan1@yopmail.com",
+        "password": "qwerty19916"
+    }
+order: 3960052858810631

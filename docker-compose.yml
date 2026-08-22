@@ -1,0 +1,71 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: journal-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: ${DB_HOST}
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-journal}
+      DB_USER: ${DB_USER:-journal_app}
+      DB_PASSWORD: ${DB_PASSWORD:-journal_app}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET:-TXhHOtFPpBD06HWGm5AiZ1c/pbwy5C6dw/TgU+IDbys=}
+      JWT_EXPIRATION_MINUTES: 60
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - uploads-data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - journal-net
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: journal-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - journal-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: journal-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - journal-net
+
+volumes:
+  postgres-data:
+  uploads-data:
+
+networks:
+  journal-net:
+    driver: bridge

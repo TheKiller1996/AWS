@@ -1,0 +1,22 @@
+name: DEV
+values:
+  - key: DB_HOST
+    value: ''
+  - key: DB_PORT
+    value: ''
+  - key: DB_NAME
+    value: ''
+  - key: DB_USER
+    value: ''
+  - key: DB_PASSWORD
+    value: ''
+  - key: DB_POOL_SIZE
+    value: ''
+  - key: REDIS_HOST
+    value: ''
+  - key: REDIS_PORT
+    value: ''
+  - key: JWT_SECRET
+    value: ''
+  - key: JWT_EXPIRATION_MINUTES
+    value: ''
